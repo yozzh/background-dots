@@ -1,6 +1,6 @@
 {
   "name": "background-dots",
-  "version": "1.0.3",
+  "version": "1.1.0",
   "description": "Interactive background dots on canvas",
   "main": "lib/background-dots.js",
   "scripts": {
@@ -60,6 +60,7 @@
   },
   "dependencies": {
     "konva": "^3.2.6",
-    "lodash": "^4.17.11"
+    "lodash": "^4.17.11",
+    "rxjs": "^6.5.2"
   }
 }

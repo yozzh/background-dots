@@ -4,6 +4,19 @@ import {Rect} from 'konva/lib/shapes/Rect';
 import {Circle} from 'konva/lib/shapes/Circle';
 import {Tween, Easings} from 'konva/lib/Tween';
 import throttle from 'lodash/throttle';
+import {fromEvent, interval, animationFrameScheduler} from 'rxjs';
+import {map, withLatestFrom, scan} from 'rxjs/operators';
+
+const getNewValue = (start, end) => {
+  const rate = 0.05;
+
+  return start + (end - start) * rate;
+};
+
+const lerp = (start, end) => ({
+  clientX: getNewValue(start.clientX, end.clientX),
+  clientY: getNewValue(start.clientY, end.clientY)
+});
 
 export default class BackgroundDots {
   static defaultOptions = {
@@ -37,8 +50,27 @@ export default class BackgroundDots {
     this.stage.add(this.layer);
 
     window.addEventListener('resize', throttle(this._resizeHandler.bind(this), 150));
-    window.addEventListener('mousemove', this._mouseMoveHandler.bind(this));
     document.body.addEventListener('mouseout', this._documentMouseOutHandler.bind(this));
+
+    const mouseMove$ = fromEvent(window, 'mousemove')
+      .pipe(map(event => {
+        return {
+          clientX: event.clientX,
+          clientY: event.clientY
+        };
+      }));
+
+    const animationFrame$ = interval(0, animationFrameScheduler);
+
+    const smoothMove$ = animationFrame$.pipe(
+      withLatestFrom(mouseMove$, (tick, move) => move),
+      scan(lerp)
+    );
+
+    this.subscription = smoothMove$.subscribe(({clientX, clientY}) => {
+      this._mouseMoveHandler(clientX, clientY);
+    });
+
     this._drawHelpers();
 
     this._draw();
@@ -132,9 +164,7 @@ export default class BackgroundDots {
     this._draw();
   }
 
-  _mouseMoveHandler(event) {
-    const {clientX, clientY} = event;
-
+  _mouseMoveHandler(clientX, clientY) {
     if (!this._isOverStage(clientX, clientY)) {
       if (this.isMouseOver) {
         this._clean();
@@ -252,6 +282,10 @@ export default class BackgroundDots {
       }
     }
     this._redraw();
+  }
+
+  destroy() {
+    this.subscription.unsubscribe();
   }
 }
 
