@@ -1,6 +1,6 @@
 {
   "name": "background-dots",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Interactive background dots on canvas",
   "main": "lib/background-dots.js",
   "scripts": {
