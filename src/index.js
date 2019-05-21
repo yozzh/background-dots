@@ -19,8 +19,8 @@ const lerp = (start, end) => ({
 
 export default class BackgroundDots {
   static defaultOptions = {
-    backgroundColor: 'rgba(0, 0, 0, 1)',
-    dotColor: 'rgba(255, 255, 255, 0.5)',
+    backgroundColor: '#141414',
+    dotColor: '#404144',
     gutter: 30,
     radius: 1,
     bubbleRadius: 300,
@@ -220,12 +220,12 @@ export default class BackgroundDots {
   }
 
   _updateCircleByDistance(circle, distance, centerX, centerY) {
-    const distanceIndex = Math.pow(1 - distance / this.options.bubbleRadius, 3);
+    const distanceIndex = -1 * Math.pow(1 - distance / this.options.bubbleRadius, 2);
     const x = circle.baseX;
     const y = circle.baseY;
     const {magneticPower} = this.options;
 
-    circle.opacity(this.options.opacity * (1 + distanceIndex));
+    circle.opacity(this.options.opacity * (1 - distanceIndex));
     circle.x(x + (centerX - x) * distanceIndex * magneticPower);
     circle.y(y + (centerY - y) * distanceIndex * magneticPower);
   }
