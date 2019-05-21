@@ -2,32 +2,34 @@
 
 const webpack = require('webpack');
 const path = require('path');
+const _ = require('lodash');
 const env = require('yargs').argv.env; // use --env with webpack 2
 const pkg = require('./package.json');
 
-let libraryName = pkg.name;
+const packageName = pkg.name;
+const libraryName = _.upperFirst(_.camelCase(packageName));
 
 let outputFile, mode;
 
 if (env === 'build') {
   mode = 'production';
-  outputFile = libraryName + '.min.js';
+  outputFile = packageName + '.min.js';
 } else {
   mode = 'development';
-  outputFile = libraryName + '.js';
+  outputFile = packageName + '.js';
 }
 
 const config = {
   mode: mode,
   entry: __dirname + '/src/index.js',
-  devtool: 'inline-source-map',
+  devtool: (env === 'build') ? false : 'inline-source-map',
   output: {
     path: __dirname + '/lib',
     filename: outputFile,
     library: libraryName,
     libraryTarget: 'umd',
     umdNamedDefine: true,
-    globalObject: "typeof self !== 'undefined' ? self : this"
+    globalObject: "typeof self !== 'undefined' ? self : window"
   },
   module: {
     rules: [
