@@ -142,15 +142,18 @@ export default class BackgroundDots {
       this.isMouseOver = false;
       return;
     }
+    const clientRect = this.element.getBoundingClientRect();
+    const stageX = clientX;
+    const stageY = clientY - clientRect.y;
 
     this.isMouseOver = true;
 
-    const {x, y} = this._getGridCoordinates(clientX, clientY);
+    const {x, y} = this._getGridCoordinates(stageX, stageY);
 
     this.helper.x(x * this.options.gutter);
     this.helper.y(y * this.options.gutter);
 
-    this._updateCirclesAround(clientX, clientY);
+    this._updateCirclesAround(stageX, stageY);
 
     this._redraw();
   }
