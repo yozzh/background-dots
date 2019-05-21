@@ -2,7 +2,6 @@ import {Stage} from 'konva/lib/Stage';
 import {Layer} from 'konva/lib/Layer';
 import {Rect} from 'konva/lib/shapes/Rect';
 import {Circle} from 'konva/lib/shapes/Circle';
-import {Tween, Easings} from 'konva/lib/Tween';
 import throttle from 'lodash/throttle';
 import {fromEvent, interval, animationFrameScheduler} from 'rxjs';
 import {map, withLatestFrom, scan} from 'rxjs/operators';
@@ -50,7 +49,6 @@ export default class BackgroundDots {
     this.stage.add(this.layer);
 
     window.addEventListener('resize', throttle(this._resizeHandler.bind(this), 150));
-    document.body.addEventListener('mouseout', this._documentMouseOutHandler.bind(this));
 
     const mouseMove$ = fromEvent(window, 'mousemove')
       .pipe(map(event => {
@@ -166,9 +164,6 @@ export default class BackgroundDots {
 
   _mouseMoveHandler(clientX, clientY) {
     if (!this._isOverStage(clientX, clientY)) {
-      if (this.isMouseOver) {
-        this._clean();
-      }
       this.isMouseOver = false;
       return;
     }
@@ -186,15 +181,6 @@ export default class BackgroundDots {
     this._updateCirclesAround(stageX, stageY);
 
     this._redraw();
-  }
-
-  _documentMouseOutHandler(e) {
-    const event = e ? e : window.event;
-    const target = event.relatedTarget;
-
-    if (!target || target.nodeName === 'HTML') {
-      this._clean();
-    }
   }
 
   _isOverStage(x, y) {
@@ -215,7 +201,6 @@ export default class BackgroundDots {
   }
 
   _updateCirclesAround(centerX, centerY) {
-    // const result = [];
     const {bubbleRadius} = this.options;
 
     for (let y = 0; y < this.grid.length; y++) {
@@ -245,43 +230,14 @@ export default class BackgroundDots {
     circle.y(y + (centerY - y) * distanceIndex * magneticPower);
   }
 
-  _cleanCircle(circle, withAnimation = false) {
+  _cleanCircle(circle) {
     if (circle.tween) {
       circle.tween.destroy();
       circle.tween = null;
     }
-    if (!withAnimation) {
-      circle.opacity(this.options.opacity);
-      circle.x(circle.baseX);
-      circle.y(circle.baseY);
-    } else {
-      if (circle.opacity() !== this.options.opacity) {
-        const tween = new Tween({
-          node: circle,
-          duration: 0.5,
-          x: circle.baseX,
-          y: circle.baseY,
-          opacity: this.options.opacity,
-          easing: Easings.StrongEaseOut
-        });
-
-        circle.tween = tween;
-        tween.play();
-      }
-    }
-  }
-
-  _clean() {
-    for (let y = 0; y < this.grid.length; y++) {
-      const row = this.grid[y];
-
-      for (let x = 0; x < row.length; x++) {
-        const circle = row[x];
-
-        this._cleanCircle(circle, true);
-      }
-    }
-    this._redraw();
+    circle.opacity(this.options.opacity);
+    circle.x(circle.baseX);
+    circle.y(circle.baseY);
   }
 
   destroy() {
