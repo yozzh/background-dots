@@ -24,6 +24,7 @@ export default class BackgroundDots {
       ...BackgroundDots.defaultOptions,
       ...options
     };
+
     this.grid = [];
 
     this.stage = new Stage({
@@ -154,8 +155,13 @@ export default class BackgroundDots {
     this._redraw();
   }
 
-  _documentMouseOutHandler() {
-    this._clean();
+  _documentMouseOutHandler(e) {
+    const event = e ? e : window.event;
+    const target = event.relatedTarget;
+
+    if (!target || target.nodeName === 'HTML') {
+      this._clean();
+    }
   }
 
   _isOverStage(x, y) {
@@ -245,3 +251,4 @@ export default class BackgroundDots {
     this._redraw();
   }
 }
+
