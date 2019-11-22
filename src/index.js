@@ -168,15 +168,19 @@ export default class BackgroundDots {
       return;
     }
     const clientRect = this.element.getBoundingClientRect();
+
     const stageX = clientX;
-    const stageY = clientY - clientRect.y;
+    const stageY = clientY - clientRect.top;
 
     this.isMouseOver = true;
 
     const {x, y} = this._getGridCoordinates(stageX, stageY);
 
-    this.helper.x(x * this.options.gutter);
-    this.helper.y(y * this.options.gutter);
+    const helperX = x * this.options.gutter;
+    const helperY = y * this.options.gutter;
+
+    this.helper.x(helperX);
+    this.helper.y(helperY);
 
     this._updateCirclesAround(stageX, stageY);
 
@@ -226,8 +230,12 @@ export default class BackgroundDots {
     const {magneticPower} = this.options;
 
     circle.opacity(this.options.opacity * (1 - distanceIndex));
-    circle.x(x + (centerX - x) * distanceIndex * magneticPower);
-    circle.y(y + (centerY - y) * distanceIndex * magneticPower);
+
+    const newX = x + (centerX - x) * distanceIndex * magneticPower;
+    const newY = y + (centerY - y) * distanceIndex * magneticPower;
+
+    circle.x(newX);
+    circle.y(newY);
   }
 
   _cleanCircle(circle) {

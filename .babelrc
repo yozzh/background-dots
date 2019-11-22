@@ -1,5 +1,17 @@
 {
-  "presets": ["env"],
+  "presets": [
+    [
+      "@babel/preset-env",
+      {
+        "useBuiltIns": "usage",
+        "modules": "commonjs",
+        "targets": {
+          "chrome": "58",
+          "ie": "11"
+        }
+      }
+    ]
+  ],
   "plugins": [
     "babel-plugin-add-module-exports",
     "@babel/plugin-proposal-class-properties"
