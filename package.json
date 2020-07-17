@@ -60,7 +60,7 @@
   },
   "dependencies": {
     "konva": "^3.2.6",
-    "lodash": "^4.17.11",
+    "lodash": "^4.17.19",
     "rxjs": "^6.5.2"
   }
 }
